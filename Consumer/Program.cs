@@ -13,7 +13,7 @@ namespace Consumer
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
             {
-                channel.QueueDeclare(queue: "TeacherVM",
+                channel.QueueDeclare(queue: "hello",
                                      durable: false,
                                      exclusive: false,
                                      autoDelete: false,
@@ -26,7 +26,7 @@ namespace Consumer
                     var message = Encoding.UTF8.GetString(body);
                     Console.WriteLine(" [x] Received {0}", message);
                 };
-                channel.BasicConsume(queue: "TeacherVM",
+                channel.BasicConsume(queue: "hello",
                                      autoAck: true,
                                      consumer: consumer);
 

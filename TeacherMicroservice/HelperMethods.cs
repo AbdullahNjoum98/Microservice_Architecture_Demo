@@ -27,7 +27,8 @@ namespace TaskAPI
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
             {
-                channel.QueueDeclare(queue: josnObject.GetType().Name,
+                var queueName=josnObject.GetType().Name;
+                channel.QueueDeclare(queue: queueName,
                                      durable: false,
                                      exclusive: false,
                                      autoDelete: false,
@@ -36,7 +37,7 @@ namespace TaskAPI
                 //string message = josnString;
                 var body = bytesObject;//Encoding.UTF8.GetBytes(message);
                 channel.BasicPublish(exchange: "",
-                                     routingKey: josnObject.GetType().Name,
+                                     routingKey: queueName,
                                      basicProperties: null,
                                      body: body);
             }
