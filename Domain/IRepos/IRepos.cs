@@ -11,7 +11,7 @@ namespace Domain.IRepos
         #region Teacher 
         public Task<List<TeacherResource>> GetAllTeachers();
         public Task<TeacherResource> GetTeacher(int id);
-        public Exception AddTeacher(TeacherVM teacher);
+        public int AddTeacher(TeacherVM teacher);
         public Exception UpdateTeacher(TeacherVM employee);
         public Exception DeleteTeacher(int id);
         #endregion

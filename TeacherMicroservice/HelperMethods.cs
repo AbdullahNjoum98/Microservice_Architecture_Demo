@@ -21,23 +21,19 @@ namespace TaskAPI
             return formattedException;
         }
         public static void Producer(byte[] bytesObject) {
-            string jsonString = Encoding.UTF8.GetString(bytesObject);
-            var josnObject = JsonConvert.DeserializeObject<TeacherVM>(jsonString);
             var factory = new ConnectionFactory() { HostName = "localhost" };
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
             {
-                var queueName=josnObject.GetType().Name;
-                channel.QueueDeclare(queue: queueName,
+                channel.QueueDeclare(queue: "TeacherVM",
                                      durable: false,
                                      exclusive: false,
                                      autoDelete: false,
                                      arguments: null);
 
-                //string message = josnString;
-                var body = bytesObject;//Encoding.UTF8.GetBytes(message);
+                var body = bytesObject;
                 channel.BasicPublish(exchange: "",
-                                     routingKey: queueName,
+                                     routingKey: "TeacherVM",
                                      basicProperties: null,
                                      body: body);
             }

@@ -33,28 +33,44 @@ namespace TeacherMicroservice.Controllers
         [HttpPost]
         public Task<TeacherResource> AddTeacher([FromBody] TeacherVM teacher)
         {
-            var jsonString = JsonSerializer.Serialize(teacher);
-            var bytesObject = Encoding.UTF8.GetBytes(jsonString);
-            HelperMethods.Producer(bytesObject);
-            repository.AddTeacher(teacher);
-            return repository.GetTeacher((int)teacher.Id);
+            var Id=repository.AddTeacher(teacher);
+            if (Id != 0)
+            {
+                var newTeacher = repository.GetTeacher(Id);
+                var jsonObject = new { id = newTeacher.Result.Id, process="add" };
+                var jsonString = JsonSerializer.Serialize(jsonObject);
+                var bytesObject = Encoding.UTF8.GetBytes(jsonString);
+                HelperMethods.Producer(bytesObject);
+            }
+            return repository.GetTeacher(Id);
         }
         [HttpPut]
-        public Task<TeacherResource> UpdateEmployee([FromBody] TeacherVM teacher)
+        public Task<TeacherResource> UpdateTeacher([FromBody] TeacherVM teacher)
         {
-            repository.UpdateTeacher(teacher);
+            if (repository.UpdateTeacher(teacher) == null)
+            {
+                var jsonObject = new { id = teacher.Id, process = "update" };
+                var jsonString = JsonSerializer.Serialize(jsonObject);
+                var bytesObject = Encoding.UTF8.GetBytes(jsonString);
+                HelperMethods.Producer(bytesObject);
+            }
             return repository.GetTeacher((int)teacher.Id);
         }
         [HttpDelete("{Id}")]
         public IActionResult DeleteTeacher(int id)
         {
-            if (repository.DeleteTeacher(id) == null)
-                return Ok();
-            else
+            Exception exception = repository.DeleteTeacher(id);
+            if ( exception == null)
             {
-                string exception = HelperMethods.getException(repository.DeleteTeacher(id));
-                return BadRequest(exception);
+                var jsonObject = new { id = id, process = "delete" };
+                var jsonString = JsonSerializer.Serialize(jsonObject);
+                var bytesObject = Encoding.UTF8.GetBytes(jsonString);
+                HelperMethods.Producer(bytesObject);
+                return Ok();
             }
+            else
+                return BadRequest(HelperMethods.getException(exception));
+            
         }
     }
 }

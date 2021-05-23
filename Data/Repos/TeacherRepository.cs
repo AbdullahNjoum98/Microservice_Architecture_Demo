@@ -21,17 +21,18 @@ namespace Data.Repos
             this.dBContext = dBContext;
             this.mapper = mapper;
         }
-        public Exception AddTeacher(TeacherVM teacher)
+        public int AddTeacher(TeacherVM teacher)
         {
             try
             {
-                dBContext.Teachers.Add(mapper.Map<Teacher>(teacher));
+                var entity = mapper.Map<Teacher>(teacher);
+                dBContext.Teachers.Add(entity);
                 dBContext.SaveChanges();
-                return null;
+                return entity.Id;
             }
             catch(Exception ex)
             {
-                return ex;
+                return 0;
             }
         }
 
@@ -41,6 +42,7 @@ namespace Data.Repos
             {
                 var teacherToDelete=dBContext.Teachers.Where(e => e.Id == id).FirstOrDefault();
                 dBContext.Teachers.Remove(teacherToDelete);
+                dBContext.SaveChanges();
                 return null;
             }
             catch (Exception ex)
